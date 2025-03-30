@@ -17,22 +17,37 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 	ViewModel() {
 	private val _employeeStatesFlow = MutableStateFlow<List<EmployeeState>>(emptyList())
 	val employeeStatesFlow = _employeeStatesFlow.asStateFlow()
+	private val _emptyStateFlow = MutableStateFlow(EmptyState(visible = false))
+	val emptyStateFlow = _emptyStateFlow.asStateFlow()
 	private val _errorStateFlow = MutableStateFlow(ErrorState(visible = false))
 	val errorStateFlow = _errorStateFlow.asStateFlow()
 
 	fun fetchAllEmployees() {
 		viewModelScope.launch {
+			_emptyStateFlow.update {
+				it.copy(visible = false)
+			}
+
 			_errorStateFlow.update {
 				it.copy(visible = false)
 			}
 
 			try {
 				val employees = employeesRepository.getAllEmployees()
-				val employeeStates = employees.map {
-					EmployeeState(it.id, it.name, it.photoUrlString, it.team)
-				}
 
-				_employeeStatesFlow.emit(employeeStates)
+				if (employees.isEmpty()) {
+					_employeeStatesFlow.emit(emptyList())
+
+					_emptyStateFlow.update {
+						it.copy(visible = true)
+					}
+				} else {
+					val employeeStates = employees.map {
+						EmployeeState(it.id, it.name, it.photoUrlString, it.team)
+					}
+
+					_employeeStatesFlow.emit(employeeStates)
+				}
 			} catch (httpException: HttpException) {
 				_errorStateFlow.update {
 					it.copy(visible = true)

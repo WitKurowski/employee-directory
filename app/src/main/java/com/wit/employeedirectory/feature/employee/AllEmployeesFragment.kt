@@ -59,6 +59,12 @@ class AllEmployeesFragment : Fragment() {
 				}
 
 				launch {
+					viewModel.emptyStateFlow.collect {
+						viewBinding.emptyStateMessage.isVisible = it.visible
+					}
+				}
+
+				launch {
 					viewModel.errorStateFlow.collect {
 						viewBinding.errorView.isVisible = it.visible
 					}

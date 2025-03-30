@@ -4,4 +4,6 @@ data class EmployeeState(
 	val id: String, val name: String, val photoUrlString: String, val team: String
 )
 
+data class EmptyState(val visible: Boolean)
+
 data class ErrorState(val visible: Boolean)
