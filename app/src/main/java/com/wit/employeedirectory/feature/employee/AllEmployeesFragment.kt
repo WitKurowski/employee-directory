@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.wit.employeedirectory.R
 import com.wit.employeedirectory.databinding.EmployeeListItemBinding
 import com.wit.employeedirectory.databinding.FragmentAllEmployeesBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,6 +67,7 @@ class AllEmployeesFragment : Fragment() {
 
 				Glide.with(photo.context) //
 					.load(employeeState.photoUrlString) //
+					.placeholder(R.drawable.baseline_person_24) //
 					.into(photo)
 
 				team.text = employeeState.team
