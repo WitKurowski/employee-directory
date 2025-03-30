@@ -1,0 +1,3 @@
+package com.wit.employeedirectory.datasource.remote
+
+interface EmployeesRemoteDataSource
