@@ -4,4 +4,5 @@
     <string name="failed_to_retrieve_employees">Failed to retrieve employees</string>
     <string name="no_employees_found">No employees found</string>
     <string name="photo">Photo</string>
+    <string name="refresh">Refresh</string>
 </resources>

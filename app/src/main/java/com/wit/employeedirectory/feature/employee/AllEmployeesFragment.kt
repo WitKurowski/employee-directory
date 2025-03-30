@@ -2,8 +2,12 @@ package com.wit.employeedirectory.feature.employee
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -64,6 +68,8 @@ class AllEmployeesFragment : Fragment() {
 			toolbar.title = getString(R.string.employees)
 		}
 
+		setUpMenu()
+
 		viewLifecycleOwner.lifecycleScope.launch {
 			repeatOnLifecycle(Lifecycle.State.RESUMED) {
 				launch {
@@ -91,6 +97,27 @@ class AllEmployeesFragment : Fragment() {
 				}
 			}
 		}
+	}
+
+	private fun setUpMenu() {
+		viewBinding.toolbar.addMenuProvider(object : MenuProvider {
+			override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+				menuInflater.inflate(R.menu.fragment_all_employees, menu)
+			}
+
+			override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+				val result = when (menuItem.itemId) {
+					R.id.refresh -> {
+						viewModel.fetchAllEmployees()
+						true
+					}
+
+					else -> false
+				}
+
+				return result
+			}
+		}, viewLifecycleOwner, Lifecycle.State.RESUMED)
 	}
 
 	class EmployeesListAdapter @Inject constructor(private val imageLoader: ImageLoader) :
