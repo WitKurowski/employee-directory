@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Employee Directory</string>
-    <string name="photo" translatable="false">Photo</string>
+    <string name="photo">Photo</string>
 </resources>
