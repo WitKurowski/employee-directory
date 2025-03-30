@@ -12,6 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="colorOnErrorContainer">@color/medium_dark_grey</item>
         <item name="colorOnSurfaceVariant">@color/medium_dark_grey</item>
     </style>
 </resources>
