@@ -67,6 +67,8 @@ class AllEmployeesFragment : Fragment() {
 				Glide.with(photo.context) //
 					.load(employeeState.photoUrlString) //
 					.into(photo)
+
+				team.text = employeeState.team
 			}
 		}
 
