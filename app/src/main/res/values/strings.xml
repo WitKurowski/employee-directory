@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Employee Directory</string>
+    <string name="employees">Employees</string>
     <string name="failed_to_retrieve_employees">Failed to retrieve employees</string>
     <string name="no_employees_found">No employees found</string>
     <string name="photo">Photo</string>

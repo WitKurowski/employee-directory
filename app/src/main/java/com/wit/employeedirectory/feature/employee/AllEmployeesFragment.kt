@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -44,10 +46,22 @@ class AllEmployeesFragment : Fragment() {
 
 		viewModel.fetchAllEmployees()
 
-		with(viewBinding.employees) {
-			// TODO: Consider using setHasFixedSize()
-			adapter = employeesListAdapter
-			layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+		with(viewBinding) {
+			with(employees) {
+				// TODO: Consider using setHasFixedSize()
+				adapter = employeesListAdapter
+				layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+				ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
+					val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+					view.setPadding(
+						view.paddingLeft, view.paddingTop, view.paddingRight, insets.bottom
+					)
+					WindowInsetsCompat.CONSUMED
+				}
+			}
+
+			toolbar.title = getString(R.string.employees)
 		}
 
 		viewLifecycleOwner.lifecycleScope.launch {
