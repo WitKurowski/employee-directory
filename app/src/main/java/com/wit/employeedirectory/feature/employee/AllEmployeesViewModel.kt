@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +34,10 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 
 				_employeeStatesFlow.emit(employeeStates)
 			} catch (httpException: HttpException) {
+				_errorStateFlow.update {
+					it.copy(visible = true)
+				}
+			} catch (ioException: IOException) {
 				_errorStateFlow.update {
 					it.copy(visible = true)
 				}
