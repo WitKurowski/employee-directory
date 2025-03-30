@@ -2,4 +2,6 @@ package com.wit.employeedirectory.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Employee(@SerializedName("uuid") val id: String)
+data class Employee(
+	@SerializedName("uuid") val id: String, @SerializedName("full_name") val name: String
+)

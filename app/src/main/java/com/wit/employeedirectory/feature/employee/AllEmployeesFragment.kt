@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wit.employeedirectory.databinding.EmployeeListItemBinding
@@ -37,7 +38,11 @@ class AllEmployeesFragment : Fragment() {
 
 		viewModel.fetchAllEmployees()
 
-		viewBinding.employees.adapter = employeesListAdapter
+		with(viewBinding.employees) {
+			// TODO: Consider using setHasFixedSize()
+			adapter = employeesListAdapter
+			layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+		}
 
 		viewLifecycleOwner.lifecycleScope.launch {
 			repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -52,7 +57,13 @@ class AllEmployeesFragment : Fragment() {
 		ListAdapter<EmployeeState, EmployeesListAdapter.EmployeeViewHolder>(
 			EmployeeStateItemCallback()
 		) {
-		override fun onBindViewHolder(holder: EmployeeViewHolder, position: Int) {}
+		override fun onBindViewHolder(holder: EmployeeViewHolder, position: Int) {
+			val employeeState = getItem(position)
+
+			with(holder.employeeListItemBinding) {
+				name.text = employeeState.name
+			}
+		}
 
 		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmployeeViewHolder {
 			val context = parent.context
@@ -73,7 +84,7 @@ class AllEmployeesFragment : Fragment() {
 				oldItem.id == newItem.id
 		}
 
-		private class EmployeeViewHolder(employeeListItemBinding: EmployeeListItemBinding) :
+		private class EmployeeViewHolder(val employeeListItemBinding: EmployeeListItemBinding) :
 			RecyclerView.ViewHolder(employeeListItemBinding.root)
 	}
 }
