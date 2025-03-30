@@ -1,9 +1,11 @@
 package com.wit.employeedirectory.feature.employee
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wit.employeedirectory.repository.EmployeesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,6 +17,18 @@ import javax.inject.Inject
 @HiltViewModel
 class AllEmployeesViewModel @Inject constructor(private val employeesRepository: EmployeesRepository) :
 	ViewModel() {
+	private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+		// TODO: Log unexpected throwable to something like Crashlytics.
+
+		// TODO: Consider switching to using Timber.
+		val message = "Caught expected throwable in ${this::class.simpleName}"
+		Log.e(AllEmployeesViewModel::class.simpleName, message, throwable)
+
+		_errorStateFlow.update {
+			it.copy(visible = true)
+		}
+	}
+
 	private val _employeeStatesFlow = MutableStateFlow<List<EmployeeState>>(emptyList())
 	val employeeStatesFlow = _employeeStatesFlow.asStateFlow()
 	private val _emptyStateFlow = MutableStateFlow(EmptyState(visible = false))
@@ -23,7 +37,7 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 	val errorStateFlow = _errorStateFlow.asStateFlow()
 
 	fun fetchAllEmployees() {
-		viewModelScope.launch {
+		viewModelScope.launch(coroutineExceptionHandler) {
 			_emptyStateFlow.update {
 				it.copy(visible = false)
 			}
