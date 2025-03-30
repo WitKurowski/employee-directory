@@ -7,11 +7,20 @@
     android:layout_marginHorizontal="@dimen/screen_horizontal_spacing"
     android:layout_marginVertical="@dimen/screen_vertical_spacing">
 
+    <ImageView
+        android:id="@+id/photo"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:contentDescription="@string/photo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/photo"
         app:layout_constraintTop_toTopOf="parent"
         tools:lines="1"
         tools:text="@tools:sample/lorem/random" />

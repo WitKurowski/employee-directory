@@ -19,7 +19,7 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 		viewModelScope.launch {
 			val employees = employeesRepository.getAllEmployees()
 			val employeeStates = employees.map {
-				EmployeeState(it.id, it.name)
+				EmployeeState(it.id, it.name, it.photoUrlString)
 			}
 
 			_employeeStatesFlow.emit(employeeStates)
