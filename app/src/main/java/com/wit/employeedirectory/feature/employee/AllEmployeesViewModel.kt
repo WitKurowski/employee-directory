@@ -83,4 +83,15 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 			}
 		}
 	}
+
+	fun sortSelected(sortOption: SortOption) {
+		viewModelScope.launch(coroutineExceptionHandler) {
+			val employees = _employeeStatesFlow.value
+			val sortedEmployees = when (sortOption) {
+				SortOption.NAME -> employees.sortedBy { it.name }
+			}
+
+			_employeeStatesFlow.emit(sortedEmployees)
+		}
+	}
 }

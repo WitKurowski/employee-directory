@@ -1,5 +1,7 @@
 package com.wit.employeedirectory.feature.employee
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,6 +13,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -109,6 +112,13 @@ class AllEmployeesFragment : Fragment() {
 				val result = when (menuItem.itemId) {
 					R.id.refresh -> {
 						viewModel.fetchAllEmployees()
+
+						true
+					}
+
+					R.id.sort -> {
+						SortOptionsDialogFragment().show(childFragmentManager, null)
+
 						true
 					}
 
@@ -155,5 +165,23 @@ class AllEmployeesFragment : Fragment() {
 
 		class EmployeeViewHolder(val employeeListItemBinding: EmployeeListItemBinding) :
 			RecyclerView.ViewHolder(employeeListItemBinding.root)
+	}
+
+	class SortOptionsDialogFragment : DialogFragment() {
+		private val viewModel: AllEmployeesViewModel by viewModels(ownerProducer = { requireParentFragment() })
+
+		override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+			val alertDialog = AlertDialog.Builder(requireContext()).run {
+				setItems(R.array.sort_options) { _, which ->
+					when (which) {
+						0 -> viewModel.sortSelected(SortOption.NAME)
+					}
+				}
+
+				create()
+			}
+
+			return alertDialog
+		}
 	}
 }

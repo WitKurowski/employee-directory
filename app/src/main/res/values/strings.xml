@@ -5,4 +5,9 @@
     <string name="no_employees_found">No employees found</string>
     <string name="photo">Photo</string>
     <string name="refresh">Refresh</string>
+    <string name="sort">Sort</string>
+
+    <string-array name="sort_options">
+        <item>Name</item>
+    </string-array>
 </resources>
