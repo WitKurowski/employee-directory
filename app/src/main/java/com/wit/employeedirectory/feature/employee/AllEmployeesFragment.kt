@@ -69,6 +69,12 @@ class AllEmployeesFragment : Fragment() {
 						viewBinding.errorView.isVisible = it.visible
 					}
 				}
+
+				launch {
+					viewModel.loadingStateFlow.collect {
+						viewBinding.loadingProgressIndicator.isVisible = it.visible
+					}
+				}
 			}
 		}
 	}

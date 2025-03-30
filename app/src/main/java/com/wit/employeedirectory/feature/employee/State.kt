@@ -7,3 +7,5 @@ data class EmployeeState(
 data class EmptyState(val visible: Boolean)
 
 data class ErrorState(val visible: Boolean)
+
+data class LoadingState(val visible: Boolean)
