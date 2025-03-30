@@ -175,6 +175,7 @@ class AllEmployeesFragment : Fragment() {
 				setItems(R.array.sort_options) { _, which ->
 					when (which) {
 						0 -> viewModel.sortSelected(SortOption.NAME)
+						1 -> viewModel.sortSelected(SortOption.TEAM)
 					}
 				}
 

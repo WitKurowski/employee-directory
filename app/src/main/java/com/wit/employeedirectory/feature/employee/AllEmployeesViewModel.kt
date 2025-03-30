@@ -89,6 +89,11 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 			val employees = _employeeStatesFlow.value
 			val sortedEmployees = when (sortOption) {
 				SortOption.NAME -> employees.sortedBy { it.name }
+				SortOption.TEAM -> {
+					employees //
+						.sortedBy { it.name } //
+						.sortedBy { it.team }
+				}
 			}
 
 			_employeeStatesFlow.emit(sortedEmployees)

@@ -9,5 +9,6 @@
 
     <string-array name="sort_options">
         <item>Name</item>
+        <item>Team</item>
     </string-array>
 </resources>
