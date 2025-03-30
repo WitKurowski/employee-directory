@@ -13,16 +13,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.wit.employeedirectory.R
 import com.wit.employeedirectory.databinding.EmployeeListItemBinding
 import com.wit.employeedirectory.databinding.FragmentAllEmployeesBinding
+import com.wit.employeedirectory.image.ImageLoader
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AllEmployeesFragment : Fragment() {
-	private val employeesListAdapter = EmployeesListAdapter()
+	@Inject
+	lateinit var employeesListAdapter: EmployeesListAdapter
+
 	private lateinit var viewBinding: FragmentAllEmployeesBinding
 	private val viewModel: AllEmployeesViewModel by viewModels()
 
@@ -55,7 +58,7 @@ class AllEmployeesFragment : Fragment() {
 		}
 	}
 
-	private class EmployeesListAdapter :
+	class EmployeesListAdapter @Inject constructor(private val imageLoader: ImageLoader) :
 		ListAdapter<EmployeeState, EmployeesListAdapter.EmployeeViewHolder>(
 			EmployeeStateItemCallback()
 		) {
@@ -64,12 +67,7 @@ class AllEmployeesFragment : Fragment() {
 
 			with(holder.employeeListItemBinding) {
 				name.text = employeeState.name
-
-				Glide.with(photo.context) //
-					.load(employeeState.photoUrlString) //
-					.placeholder(R.drawable.baseline_person_24) //
-					.into(photo)
-
+				imageLoader.load(photo, employeeState.photoUrlString, R.drawable.baseline_person_24)
 				team.text = employeeState.team
 			}
 		}
@@ -93,7 +91,7 @@ class AllEmployeesFragment : Fragment() {
 				oldItem.id == newItem.id
 		}
 
-		private class EmployeeViewHolder(val employeeListItemBinding: EmployeeListItemBinding) :
+		class EmployeeViewHolder(val employeeListItemBinding: EmployeeListItemBinding) :
 			RecyclerView.ViewHolder(employeeListItemBinding.root)
 	}
 }
