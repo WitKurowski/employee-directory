@@ -1,6 +1,8 @@
 plugins {
 	alias(libs.plugins.android.application)
+	alias(libs.plugins.hilt.android)
 	alias(libs.plugins.kotlin.android)
+	alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -48,4 +50,12 @@ dependencies {
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
+
+	// Hilt
+	implementation(libs.hilt.android)
+	kapt(libs.hilt.android.compiler)
+}
+
+kapt {
+	correctErrorTypes = true
 }
