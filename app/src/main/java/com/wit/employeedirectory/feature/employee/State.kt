@@ -1,0 +1,3 @@
+package com.wit.employeedirectory.feature.employee
+
+data class EmployeeState(val id: String)
