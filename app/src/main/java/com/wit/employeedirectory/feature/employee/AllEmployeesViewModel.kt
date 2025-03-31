@@ -48,37 +48,41 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 				it.copy(visible = false)
 			}
 
+			val fetchNeeded = _employeeStatesFlow.value.isEmpty()
+
 			_loadingStateFlow.update {
-				it.copy(visible = true)
+				it.copy(visible = fetchNeeded)
 			}
 
-			try {
-				val employees = employeesRepository.getAllEmployees()
+			if (fetchNeeded) {
+				try {
+					val employees = employeesRepository.getAllEmployees()
 
-				if (employees.isEmpty()) {
-					_employeeStatesFlow.emit(emptyList())
+					if (employees.isEmpty()) {
+						_employeeStatesFlow.emit(emptyList())
 
-					_emptyStateFlow.update {
+						_emptyStateFlow.update {
+							it.copy(visible = true)
+						}
+					} else {
+						val employeeStates = employees.map {
+							EmployeeState(it.id, it.name, it.photoUrlString, it.team)
+						}
+
+						_employeeStatesFlow.emit(employeeStates)
+					}
+				} catch (httpException: HttpException) {
+					_errorStateFlow.update {
 						it.copy(visible = true)
 					}
-				} else {
-					val employeeStates = employees.map {
-						EmployeeState(it.id, it.name, it.photoUrlString, it.team)
+				} catch (ioException: IOException) {
+					_errorStateFlow.update {
+						it.copy(visible = true)
 					}
-
-					_employeeStatesFlow.emit(employeeStates)
-				}
-			} catch (httpException: HttpException) {
-				_errorStateFlow.update {
-					it.copy(visible = true)
-				}
-			} catch (ioException: IOException) {
-				_errorStateFlow.update {
-					it.copy(visible = true)
-				}
-			} finally {
-				_loadingStateFlow.update {
-					it.copy(visible = false)
+				} finally {
+					_loadingStateFlow.update {
+						it.copy(visible = false)
+					}
 				}
 			}
 		}
