@@ -31,6 +31,7 @@ With more time, I would probably provide both options for users, as pull-to-refr
 Other things I would consider with more time:
 - Add unit tests for EmployeesRepositoryTest, especially if more complex logic is added to it.
 - Extract some of the repeated boilerplate code in the unit tests to shrink and simplify the code, while making the actual test case logic more apparent.
+- The code in `AllEmployeesFragment.onViewCreated(...)` has gotten a little long, and could be broken up into smaller functions.
 - Introduce Timber, or other logging library, to help with debugging and log reporting to various logging services.
 - Try out a collapsing toolbar when scrolling to see if that makes for a better user experience.
 - Provide a way to sort by either first or last name.  With only a single "full_name" field currently returned in the JSON, though, this might require a few more complex requirements considerations to ensure we properly handle scenarios where we receive single-word names (e.g., "Madonna"), or 3+-word names (e.g., "Leonardo da Vinci").
