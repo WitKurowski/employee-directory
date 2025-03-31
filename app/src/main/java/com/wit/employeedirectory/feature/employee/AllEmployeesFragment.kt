@@ -178,6 +178,7 @@ class AllEmployeesFragment : Fragment() {
 						1 -> viewModel.sortSelected(SortOption.TEAM)
 					}
 				}
+				setTitle(R.string.sort_by)
 
 				create()
 			}
