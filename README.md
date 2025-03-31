@@ -29,6 +29,7 @@ One of the more notable tradeoffs I made, functionality-wise, was using a menu b
 With more time, I would probably provide both options for users, as pull-to-refresh is a very natural user action, while the menu option ensures accessibility for a greater number of users.
 
 Other things I would consider with more time:
+- Add unit tests for EmployeesRepositoryTest, especially if more complex logic is added to it.
 - Introduce Timber, or other logging library, to help with debugging and log reporting to various logging services.
 - Try out a collapsing toolbar when scrolling to see if that makes for a better user experience.
 - Provide a way to sort by either first or last name.  With only a single "full_name" field currently returned in the JSON, though, this might require a few more complex requirements considerations to ensure we properly handle scenarios where we receive single-word names (e.g., "Madonna"), or 3+-word names (e.g., "Leonardo da Vinci").
