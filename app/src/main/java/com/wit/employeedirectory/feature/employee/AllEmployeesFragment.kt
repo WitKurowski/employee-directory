@@ -54,6 +54,17 @@ class AllEmployeesFragment : Fragment() {
 		viewModel.fetchAllEmployees()
 
 		with(viewBinding) {
+			ViewCompat.setOnApplyWindowInsetsListener(appBar) { _, windowInsets ->
+				val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+				view.setPadding(
+					insets.left,
+					insets.top,
+					insets.right,
+					view.paddingBottom
+				)
+				WindowInsetsCompat.CONSUMED
+			}
+
 			with(employees) {
 				// TODO: Consider using setHasFixedSize()
 				adapter = employeesListAdapter
