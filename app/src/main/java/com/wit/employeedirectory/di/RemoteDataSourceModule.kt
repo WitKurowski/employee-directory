@@ -11,7 +11,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 @InstallIn(SingletonComponent::class)
 @Module
-object Module {
+object RemoteDataSourceModule {
+	@Provides
+	fun provideEmployeesRemoteDataSource(retrofit: Retrofit): EmployeesRemoteDataSource =
+		retrofit.create(EmployeesRemoteDataSource::class.java)
+
 	@Provides
 	fun provideRetrofit(): Retrofit {
 		val retrofit = Retrofit.Builder().run {
@@ -22,8 +26,4 @@ object Module {
 
 		return retrofit
 	}
-
-	@Provides
-	fun provideEmployeesRemoteDataSource(retrofit: Retrofit): EmployeesRemoteDataSource =
-		retrofit.create(EmployeesRemoteDataSource::class.java)
 }
