@@ -2,13 +2,15 @@
     <string name="app_name">Employee Directory</string>
     <string name="employees">Employees</string>
     <string name="failed_to_retrieve_employees">Failed to retrieve employees</string>
+    <string name="name">Name</string>
     <string name="no_employees_found">No employees found</string>
     <string name="photo">Photo</string>
     <string name="refresh">Refresh</string>
     <string name="sort">Sort</string>
+    <string name="team">Team</string>
 
     <string-array name="sort_options">
-        <item>Name</item>
-        <item>Team</item>
+        <item>@string/name</item>
+        <item>@string/team</item>
     </string-array>
 </resources>
