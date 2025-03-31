@@ -66,9 +66,9 @@ class AllEmployeesFragment : Fragment() {
 			}
 
 			with(employees) {
-				// TODO: Consider using setHasFixedSize()
 				adapter = employeesListAdapter
 				layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+				setHasFixedSize(true)
 
 				ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
 					val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
