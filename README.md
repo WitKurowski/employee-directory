@@ -42,13 +42,13 @@ Other things I would consider with more time:
 - When no employees are returned from the back-end, we could hide the "Sort" menu option since there's nothing to sort.
 - Instead of exposing one of the `AllEmployeesViewModel` `MutableStateFlow`s to outside classes, I would consider finding a way to inject the initial state specifically for unit test usage.
 - Potentially introduce `MaterialCardView` to add more visual flair to the list items.
-- Add line count limits name and team if we foresee scenarios where those fields will sometimes be very long.
 
 ## What do you think is the weakest part of your project?
-I would say there is a lot of room for improvement with the style and colors of the app, especially when looking across both light and dark themes.  That said, I did take the time to ensure that all text was readable and that icons were visible in both themes.
+I would say there is room for improvement with the style and colors of the app, especially when looking across both light and dark themes.  That said, I did take the time to ensure that all text was readable and that icons were visible in both themes.
 
 ## Did you copy any code or dependencies? Please make sure to attribute them here!
-I referenced quite a bit of Android documentation, and I leveraged Android Studio's Gemini integration for some advice here and there, but I did not copy any large chunks of code into this codebase.
+I referenced some Android documentation, and I leveraged Android Studio's Gemini integration for advice here and there, but I did not copy any large chunks of code from anywhere.
 
 ## Is there any other information you’d like us to know?
+- I developed on a phone, specifically on a Pixel 7 running Android 15.
 - I went with a `ListAdapter` to back the employee list since that gives us a lot of basic functionality out of the box, particularly the animated reordering and updating of the list as the data is changed, while reducing boilerplate code and providing performance efficiencies.
