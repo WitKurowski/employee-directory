@@ -44,6 +44,7 @@ Other things I would consider with more time:
 - When no employees are returned from the back-end, we could hide the "Sort" menu option since there's nothing to sort.
 - Instead of exposing one of the `AllEmployeesViewModel` `MutableStateFlow`s to outside classes, I would consider finding a way to inject the initial state specifically for unit test usage.
 - Potentially introduce `MaterialCardView` to add more visual flair to the list items.
+- Use Proguard and minifyEnabled to enable code obfuscation and reduce the size of the app.
 
 ## What do you think is the weakest part of your project?
 I would say there is room for improvement with the style and colors of the app, especially when looking across both light and dark themes.  That said, I did take the time to ensure that all text was readable and that icons were visible in both themes.
