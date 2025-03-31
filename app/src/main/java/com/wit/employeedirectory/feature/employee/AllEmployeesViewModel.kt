@@ -40,7 +40,7 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 	private val _loadingStateFlow = MutableStateFlow(LoadingState(visible = false))
 	val loadingStateFlow = _loadingStateFlow.asStateFlow()
 
-	fun fetchAllEmployees() {
+	fun fetchAllEmployees(forceRefresh: Boolean = false) {
 		viewModelScope.launch(coroutineExceptionHandler) {
 			_emptyStateFlow.update {
 				it.copy(visible = false)
@@ -50,7 +50,7 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 				it.copy(visible = false)
 			}
 
-			val fetchNeeded = _employeeStatesFlow.value.isEmpty()
+			val fetchNeeded = forceRefresh || _employeeStatesFlow.value.isEmpty()
 
 			_loadingStateFlow.update {
 				it.copy(visible = fetchNeeded)

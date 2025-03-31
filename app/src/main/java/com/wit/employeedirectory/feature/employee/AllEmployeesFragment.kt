@@ -122,7 +122,7 @@ class AllEmployeesFragment : Fragment() {
 			override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
 				val result = when (menuItem.itemId) {
 					R.id.refresh -> {
-						viewModel.fetchAllEmployees()
+						viewModel.fetchAllEmployees(forceRefresh = true)
 
 						true
 					}
