@@ -38,7 +38,7 @@ class AllEmployeesViewModelTest {
 	}
 
 	@Test
-	fun `show empty state when there are no employees`() = runTest(testDispatcher) {
+	fun `show empty state when an empty list of employees is returned`() = runTest(testDispatcher) {
 		given(employeesRepository.getAllEmployees()).willReturn(emptyList())
 
 		val actualEmployeeStates = mutableListOf<List<EmployeeState>>()
@@ -76,7 +76,7 @@ class AllEmployeesViewModelTest {
 	}
 
 	@Test
-	fun `show employees when there are employees`() = runTest(testDispatcher) {
+	fun `show employees when a non-empty list of employees is returned`() = runTest(testDispatcher) {
 		val id1 = "1"
 		val name1 = "Bob"
 		val photoUrlString1 = "http://photo.url.string/1.jpg"
