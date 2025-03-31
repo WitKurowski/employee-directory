@@ -48,6 +48,7 @@ dependencies {
 	implementation(libs.androidx.fragment.ktx)
 	implementation(libs.material)
 	testImplementation(libs.junit)
+	testImplementation(libs.kotlinx.coroutines.test)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 
@@ -57,6 +58,9 @@ dependencies {
 	// Hilt
 	implementation(libs.hilt.android)
 	kapt(libs.hilt.android.compiler)
+
+	// Mockito
+	testImplementation(libs.mockito.core)
 
 	// Retrofit
 	implementation(libs.converter.gson)

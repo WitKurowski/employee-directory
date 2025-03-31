@@ -1,6 +1,7 @@
 package com.wit.employeedirectory.feature.employee
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wit.employeedirectory.repository.EmployeesRepository
@@ -29,7 +30,8 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 		}
 	}
 
-	private val _employeeStatesFlow = MutableStateFlow<List<EmployeeState>>(emptyList())
+	@VisibleForTesting
+	val _employeeStatesFlow = MutableStateFlow<List<EmployeeState>>(emptyList())
 	val employeeStatesFlow = _employeeStatesFlow.asStateFlow()
 	private val _emptyStateFlow = MutableStateFlow(EmptyState(visible = false))
 	val emptyStateFlow = _emptyStateFlow.asStateFlow()
