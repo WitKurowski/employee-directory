@@ -79,7 +79,7 @@ class AllEmployeesFragment : Fragment() {
 				}
 			}
 
-			toolbar.title = getString(R.string.employees)
+			toolbar.title = getString(R.string.app_name)
 		}
 
 		setUpMenu()
