@@ -1,5 +1,6 @@
 plugins {
 	alias(libs.plugins.android.application)
+	alias(libs.plugins.compose.compiler)
 	alias(libs.plugins.hilt.android)
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.kapt)
@@ -20,6 +21,7 @@ android {
 	}
 
 	buildFeatures {
+		compose = true
 		viewBinding = true
 	}
 
@@ -51,6 +53,16 @@ dependencies {
 	testImplementation(libs.kotlinx.coroutines.test)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
+
+	// Android Studio Preview support
+	implementation(libs.androidx.ui.tooling.preview)
+	debugImplementation(libs.androidx.ui.tooling)
+
+	// Compose
+	val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
+	implementation(composeBom)
+	androidTestImplementation(composeBom)
+	implementation(libs.androidx.material3)
 
 	// Glide
 	implementation(libs.glide)
