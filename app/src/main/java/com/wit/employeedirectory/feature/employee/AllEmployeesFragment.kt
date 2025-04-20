@@ -9,6 +9,23 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -17,6 +34,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
@@ -27,7 +45,9 @@ import com.wit.employeedirectory.R
 import com.wit.employeedirectory.databinding.EmployeeListItemBinding
 import com.wit.employeedirectory.databinding.FragmentAllEmployeesBinding
 import com.wit.employeedirectory.image.ImageLoader
+import com.wit.employeedirectory.theme.EmployeeDirectoryTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,6 +65,12 @@ class AllEmployeesFragment : Fragment() {
 		viewBinding = FragmentAllEmployeesBinding.inflate(inflater, container, false)
 		val view = viewBinding.root
 
+		viewBinding.composeView.setContent {
+			EmployeeDirectoryTheme {
+				ErrorState(viewModel.errorStateFlow)
+			}
+		}
+
 		return view
 	}
 
@@ -57,10 +83,7 @@ class AllEmployeesFragment : Fragment() {
 			ViewCompat.setOnApplyWindowInsetsListener(appBar) { _, windowInsets ->
 				val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 				view.setPadding(
-					insets.left,
-					insets.top,
-					insets.right,
-					view.paddingBottom
+					insets.left, insets.top, insets.right, view.paddingBottom
 				)
 				WindowInsetsCompat.CONSUMED
 			}
@@ -95,12 +118,6 @@ class AllEmployeesFragment : Fragment() {
 				launch {
 					viewModel.emptyStateFlow.collect {
 						viewBinding.emptyStateMessage.isVisible = it.visible
-					}
-				}
-
-				launch {
-					viewModel.errorStateFlow.collect {
-						viewBinding.errorView.isVisible = it.visible
 					}
 				}
 
@@ -195,6 +212,30 @@ class AllEmployeesFragment : Fragment() {
 			}
 
 			return alertDialog
+		}
+	}
+}
+
+@Composable
+fun ErrorState(errorStateFlow: StateFlow<ErrorState>) {
+	val errorState by errorStateFlow.collectAsStateWithLifecycle()
+
+	if (errorState.visible) {
+		Surface(color = Color.Transparent) {
+			Column {
+				Image(
+					contentDescription = null,
+					imageVector = ImageVector.vectorResource(R.drawable.baseline_error_outline_24),
+					modifier = Modifier
+						.align(Alignment.CenterHorizontally)
+				)
+				Spacer(modifier = Modifier.height(8.dp))
+				Text(
+					color = MaterialTheme.colorScheme.onSurfaceVariant,
+					modifier = Modifier.wrapContentWidth(),
+					text = stringResource(R.string.failed_to_retrieve_employees)
+				)
+			}
 		}
 	}
 }
