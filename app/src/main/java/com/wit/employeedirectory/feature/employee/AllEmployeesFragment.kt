@@ -67,7 +67,10 @@ class AllEmployeesFragment : Fragment() {
 
 		viewBinding.composeView.setContent {
 			EmployeeDirectoryTheme {
-				ErrorState(viewModel.errorStateFlow)
+				Column {
+					EmptyState(viewModel.emptyStateFlow)
+					ErrorState(viewModel.errorStateFlow)
+				}
 			}
 		}
 
@@ -112,12 +115,6 @@ class AllEmployeesFragment : Fragment() {
 				launch {
 					viewModel.employeeStatesFlow.collect {
 						employeesListAdapter.submitList(it)
-					}
-				}
-
-				launch {
-					viewModel.emptyStateFlow.collect {
-						viewBinding.emptyStateMessage.isVisible = it.visible
 					}
 				}
 
@@ -217,7 +214,23 @@ class AllEmployeesFragment : Fragment() {
 }
 
 @Composable
-fun ErrorState(errorStateFlow: StateFlow<ErrorState>) {
+private fun EmptyState(emptyStateFlow: StateFlow<EmptyState>) {
+	val emptyState by emptyStateFlow.collectAsStateWithLifecycle()
+
+	if (emptyState.visible) {
+		Surface(color = Color.Transparent) {
+			Text(
+				color = MaterialTheme.colorScheme.onSurfaceVariant,
+				modifier = Modifier.wrapContentWidth(),
+				style = MaterialTheme.typography.bodyLarge,
+				text = stringResource(R.string.no_employees_found)
+			)
+		}
+	}
+}
+
+@Composable
+private fun ErrorState(errorStateFlow: StateFlow<ErrorState>) {
 	val errorState by errorStateFlow.collectAsStateWithLifecycle()
 
 	if (errorState.visible) {
@@ -233,6 +246,7 @@ fun ErrorState(errorStateFlow: StateFlow<ErrorState>) {
 				Text(
 					color = MaterialTheme.colorScheme.onSurfaceVariant,
 					modifier = Modifier.wrapContentWidth(),
+					style = MaterialTheme.typography.bodyLarge,
 					text = stringResource(R.string.failed_to_retrieve_employees)
 				)
 			}
