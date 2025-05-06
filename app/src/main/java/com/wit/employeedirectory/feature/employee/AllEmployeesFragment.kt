@@ -81,20 +81,7 @@ class AllEmployeesFragment : Fragment() {
 		viewBinding.composeView.setContent {
 			EmployeeDirectoryTheme {
 				Surface {
-					val employees by viewModel.employeeStatesFlow.collectAsStateWithLifecycle()
-
-					// TODO: Fix top window insets for list in landscape orientation.
-					LazyColumn(
-						contentPadding = WindowInsets.systemBars.asPaddingValues(),
-						modifier = Modifier
-							.fillMaxSize()
-							.windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Start))
-					) {
-						items(employees) {
-							EmployeeListItem(imageLoader, it.name, it.photoUrlString, it.team)
-						}
-					}
-
+					EmployeeList(viewModel.employeeStatesFlow, imageLoader)
 					EmptyState(viewModel.emptyStateFlow)
 					ErrorState(viewModel.errorStateFlow)
 				}
@@ -179,6 +166,25 @@ class AllEmployeesFragment : Fragment() {
 			}
 
 			return alertDialog
+		}
+	}
+}
+
+@Composable
+private fun EmployeeList(
+	employeeStatesFlow: StateFlow<List<EmployeeState>>, imageLoader: ImageLoader
+) {
+	val employees by employeeStatesFlow.collectAsStateWithLifecycle()
+
+	// TODO: Fix top window insets for list in landscape orientation.
+	LazyColumn(
+		contentPadding = WindowInsets.systemBars.asPaddingValues(),
+		modifier = Modifier
+			.fillMaxSize()
+			.windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Start))
+	) {
+		items(employees) {
+			EmployeeListItem(imageLoader, it.name, it.photoUrlString, it.team)
 		}
 	}
 }
