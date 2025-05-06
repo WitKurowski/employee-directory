@@ -65,7 +65,7 @@ dependencies {
 	implementation(libs.androidx.material3)
 
 	// Glide
-	implementation(libs.glide)
+	implementation(libs.compose)
 
 	// Hilt
 	implementation(libs.hilt.android)
@@ -81,4 +81,8 @@ dependencies {
 
 kapt {
 	correctErrorTypes = true
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+	compilerOptions.optIn.add("com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi")
 }

@@ -11,9 +11,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,8 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -37,12 +55,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.wit.employeedirectory.R
-import com.wit.employeedirectory.databinding.EmployeeListItemBinding
 import com.wit.employeedirectory.databinding.FragmentAllEmployeesBinding
 import com.wit.employeedirectory.image.ImageLoader
 import com.wit.employeedirectory.theme.EmployeeDirectoryTheme
@@ -54,7 +67,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AllEmployeesFragment : Fragment() {
 	@Inject
-	lateinit var employeesListAdapter: EmployeesListAdapter
+	lateinit var imageLoader: ImageLoader
 
 	private lateinit var viewBinding: FragmentAllEmployeesBinding
 	private val viewModel: AllEmployeesViewModel by viewModels()
@@ -67,7 +80,21 @@ class AllEmployeesFragment : Fragment() {
 
 		viewBinding.composeView.setContent {
 			EmployeeDirectoryTheme {
-				Column {
+				Surface {
+					val employees by viewModel.employeeStatesFlow.collectAsStateWithLifecycle()
+
+					// TODO: Fix top window insets for list in landscape orientation.
+					LazyColumn(
+						contentPadding = WindowInsets.systemBars.asPaddingValues(),
+						modifier = Modifier
+							.fillMaxSize()
+							.windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Start))
+					) {
+						items(employees) {
+							EmployeeListItem(imageLoader, it.name, it.photoUrlString, it.team)
+						}
+					}
+
 					EmptyState(viewModel.emptyStateFlow)
 					ErrorState(viewModel.errorStateFlow)
 				}
@@ -91,20 +118,6 @@ class AllEmployeesFragment : Fragment() {
 				WindowInsetsCompat.CONSUMED
 			}
 
-			with(employees) {
-				adapter = employeesListAdapter
-				layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-				setHasFixedSize(true)
-
-				ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
-					val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
-					view.setPadding(
-						view.paddingLeft, view.paddingTop, view.paddingRight, insets.bottom
-					)
-					WindowInsetsCompat.CONSUMED
-				}
-			}
-
 			toolbar.title = getString(R.string.app_name)
 		}
 
@@ -112,12 +125,6 @@ class AllEmployeesFragment : Fragment() {
 
 		viewLifecycleOwner.lifecycleScope.launch {
 			repeatOnLifecycle(Lifecycle.State.RESUMED) {
-				launch {
-					viewModel.employeeStatesFlow.collect {
-						employeesListAdapter.submitList(it)
-					}
-				}
-
 				launch {
 					viewModel.loadingStateFlow.collect {
 						viewBinding.loadingProgressIndicator.isVisible = it.visible
@@ -155,43 +162,6 @@ class AllEmployeesFragment : Fragment() {
 		}, viewLifecycleOwner, Lifecycle.State.RESUMED)
 	}
 
-	class EmployeesListAdapter @Inject constructor(private val imageLoader: ImageLoader) :
-		ListAdapter<EmployeeState, EmployeesListAdapter.EmployeeViewHolder>(
-			EmployeeStateItemCallback()
-		) {
-		override fun onBindViewHolder(holder: EmployeeViewHolder, position: Int) {
-			val employeeState = getItem(position)
-
-			with(holder.employeeListItemBinding) {
-				name.text = employeeState.name
-				imageLoader.load(photo, employeeState.photoUrlString, R.drawable.baseline_person_24)
-				team.text = employeeState.team
-			}
-		}
-
-		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmployeeViewHolder {
-			val context = parent.context
-			val layoutInflater = LayoutInflater.from(context)
-			val employeeListItemBinding =
-				EmployeeListItemBinding.inflate(layoutInflater, parent, false)
-			val employeeViewHolder = EmployeeViewHolder(employeeListItemBinding)
-
-			return employeeViewHolder
-		}
-
-		private class EmployeeStateItemCallback : DiffUtil.ItemCallback<EmployeeState>() {
-			override fun areContentsTheSame(
-				oldItem: EmployeeState, newItem: EmployeeState
-			): Boolean = oldItem == newItem
-
-			override fun areItemsTheSame(oldItem: EmployeeState, newItem: EmployeeState): Boolean =
-				oldItem.id == newItem.id
-		}
-
-		class EmployeeViewHolder(val employeeListItemBinding: EmployeeListItemBinding) :
-			RecyclerView.ViewHolder(employeeListItemBinding.root)
-	}
-
 	class SortOptionsDialogFragment : DialogFragment() {
 		private val viewModel: AllEmployeesViewModel by viewModels(ownerProducer = { requireParentFragment() })
 
@@ -209,6 +179,44 @@ class AllEmployeesFragment : Fragment() {
 			}
 
 			return alertDialog
+		}
+	}
+}
+
+@Composable
+private fun EmployeeListItem(
+	imageLoader: ImageLoader,
+	@PreviewParameter(LoremIpsum::class) name: String,
+	@PreviewParameter(LoremIpsum::class) photoUrlString: String,
+	@PreviewParameter(LoremIpsum::class) team: String
+) {
+	Row(
+		modifier = Modifier.padding(
+			horizontal = dimensionResource(R.dimen.screen_horizontal_spacing),
+			vertical = dimensionResource(R.dimen.screen_vertical_spacing)
+		), verticalAlignment = Alignment.CenterVertically
+	) {
+		imageLoader.Image(
+			contentDescriptionResId = R.string.photo,
+			modifier = Modifier.size(64.dp),
+			placeholderDrawableResId = R.drawable.baseline_person_24,
+			urlString = photoUrlString
+		)
+		Spacer(modifier = Modifier.width(8.dp))
+		Column {
+			Text(
+				maxLines = 1,
+				overflow = TextOverflow.Ellipsis,
+				style = MaterialTheme.typography.titleLarge,
+				text = name
+			)
+			Text(
+				color = MaterialTheme.colorScheme.onSurfaceVariant,
+				maxLines = 1,
+				overflow = TextOverflow.Ellipsis,
+				style = MaterialTheme.typography.bodyMedium,
+				text = team
+			)
 		}
 	}
 }
@@ -239,8 +247,7 @@ private fun ErrorState(errorStateFlow: StateFlow<ErrorState>) {
 				Image(
 					contentDescription = null,
 					imageVector = ImageVector.vectorResource(R.drawable.baseline_error_outline_24),
-					modifier = Modifier
-						.align(Alignment.CenterHorizontally)
+					modifier = Modifier.align(Alignment.CenterHorizontally)
 				)
 				Spacer(modifier = Modifier.height(8.dp))
 				Text(

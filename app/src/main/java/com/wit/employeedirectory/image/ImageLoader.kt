@@ -1,8 +1,16 @@
 package com.wit.employeedirectory.image
 
-import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 interface ImageLoader {
-	fun load(imageView: ImageView, urlString: String, @DrawableRes placeholderDrawableRes: Int)
+	@Composable
+	fun Image(
+		@StringRes contentDescriptionResId: Int,
+		modifier: Modifier,
+		@DrawableRes placeholderDrawableResId: Int,
+		urlString: String
+	)
 }

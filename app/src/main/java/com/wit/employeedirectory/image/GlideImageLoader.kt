@@ -1,17 +1,28 @@
 package com.wit.employeedirectory.image
 
-import android.content.Context
-import android.widget.ImageView
-import com.bumptech.glide.Glide
-import dagger.hilt.android.qualifiers.ApplicationContext
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import javax.inject.Inject
 
-class GlideImageLoader @Inject constructor(@ApplicationContext private val context: Context) :
-	ImageLoader {
-	override fun load(imageView: ImageView, urlString: String, placeholderDrawableRes: Int) {
-		Glide.with(context) //
-			.load(urlString) //
-			.placeholder(placeholderDrawableRes) //
-			.into(imageView)
+class GlideImageLoader @Inject constructor() : ImageLoader {
+	@Composable
+	override fun Image(
+		@StringRes contentDescriptionResId: Int,
+		modifier: Modifier,
+		@DrawableRes placeholderDrawableResId: Int,
+		urlString: String
+	) {
+		GlideImage(
+			contentDescription = stringResource(contentDescriptionResId),
+			failure = placeholder(placeholderDrawableResId),
+			loading = placeholder(placeholderDrawableResId),
+			model = urlString,
+			modifier = modifier
+		)
 	}
 }
