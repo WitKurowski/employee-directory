@@ -42,6 +42,7 @@ Other things I would consider with more time:
 - Add the ability to click on a list item to see an overlay containing a more detailed view of the employee, which could include the biography.
 - Although it was explicitly stated that we do not want to persist the employee data, we could provide an in-memory caching solution with something such as an `EmployeesLocalDataSource` class.
 - When no employees are returned from the back-end, we could hide the "Sort" menu option since there's nothing to sort.
+- When the employee list is re-fetched, we could consider maintaining the previous sorting order.
 - Instead of exposing one of the `AllEmployeesViewModel` `MutableStateFlow`s to outside classes, I would consider finding a way to inject the initial state specifically for unit test usage.
 - Potentially introduce `MaterialCardView` to add more visual flair to the list items.
 - Use Proguard and minifyEnabled to enable code obfuscation and reduce the size of the app.
