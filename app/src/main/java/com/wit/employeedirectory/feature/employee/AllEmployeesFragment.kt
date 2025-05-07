@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
@@ -28,6 +30,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,21 +50,17 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.wit.employeedirectory.R
 import com.wit.employeedirectory.databinding.FragmentAllEmployeesBinding
 import com.wit.employeedirectory.image.ImageLoader
 import com.wit.employeedirectory.theme.EmployeeDirectoryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -80,8 +79,9 @@ class AllEmployeesFragment : Fragment() {
 
 		viewBinding.composeView.setContent {
 			EmployeeDirectoryTheme {
-				Surface {
+				Surface(modifier = Modifier.fillMaxWidth()) {
 					EmployeeList(viewModel.employeeStatesFlow, imageLoader)
+					LoadingState(viewModel.loadingStateFlow)
 					EmptyState(viewModel.emptyStateFlow)
 					ErrorState(viewModel.errorStateFlow)
 				}
@@ -109,16 +109,6 @@ class AllEmployeesFragment : Fragment() {
 		}
 
 		setUpMenu()
-
-		viewLifecycleOwner.lifecycleScope.launch {
-			repeatOnLifecycle(Lifecycle.State.RESUMED) {
-				launch {
-					viewModel.loadingStateFlow.collect {
-						viewBinding.loadingProgressIndicator.isVisible = it.visible
-					}
-				}
-			}
-		}
 	}
 
 	private fun setUpMenu() {
@@ -264,5 +254,15 @@ private fun ErrorState(errorStateFlow: StateFlow<ErrorState>) {
 				)
 			}
 		}
+	}
+}
+
+@Composable
+private fun LoadingState(loadingStateFlow: StateFlow<LoadingState>) {
+	val loadingState by loadingStateFlow.collectAsStateWithLifecycle()
+
+	if (loadingState.visible) {
+		// TODO: Fix top insets after app bar layout is migrated to Compose.
+		LinearProgressIndicator(modifier = Modifier.safeContentPadding())
 	}
 }
