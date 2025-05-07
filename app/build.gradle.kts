@@ -84,5 +84,6 @@ kapt {
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+	compilerOptions.optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
 	compilerOptions.optIn.add("com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi")
 }

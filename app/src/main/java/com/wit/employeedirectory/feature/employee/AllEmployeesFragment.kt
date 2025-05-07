@@ -1,12 +1,7 @@
 package com.wit.employeedirectory.feature.employee
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
@@ -15,25 +10,27 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,13 +44,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
-import androidx.core.view.MenuProvider
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wit.employeedirectory.R
 import com.wit.employeedirectory.databinding.FragmentAllEmployeesBinding
@@ -77,13 +70,24 @@ class AllEmployeesFragment : Fragment() {
 		viewBinding = FragmentAllEmployeesBinding.inflate(inflater, container, false)
 		val view = viewBinding.root
 
+		// TODO: Find proper way to handle insets and padding when dealing with edge-to-edge.
 		viewBinding.composeView.setContent {
 			EmployeeDirectoryTheme {
-				Surface(modifier = Modifier.fillMaxWidth()) {
-					EmployeeList(viewModel.employeeStatesFlow, imageLoader)
-					LoadingState(viewModel.loadingStateFlow)
-					EmptyState(viewModel.emptyStateFlow)
-					ErrorState(viewModel.errorStateFlow)
+				Scaffold(topBar = {
+					TopAppBar(childFragmentManager, viewModel)
+				}, contentWindowInsets = WindowInsets(0, 0, 0, 0)) {
+					Surface(
+						modifier = Modifier
+							.fillMaxWidth()
+							.padding(it)
+							.consumeWindowInsets(it)
+							.systemBarsPadding()
+					) {
+						EmployeeList(viewModel.employeeStatesFlow, imageLoader)
+						LoadingState(viewModel.loadingStateFlow)
+						EmptyState(viewModel.emptyStateFlow)
+						ErrorState(viewModel.errorStateFlow)
+					}
 				}
 			}
 		}
@@ -95,68 +99,6 @@ class AllEmployeesFragment : Fragment() {
 		super.onViewCreated(view, savedInstanceState)
 
 		viewModel.fetchAllEmployees()
-
-		with(viewBinding) {
-			ViewCompat.setOnApplyWindowInsetsListener(appBar) { _, windowInsets ->
-				val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-				view.setPadding(
-					insets.left, insets.top, insets.right, view.paddingBottom
-				)
-				WindowInsetsCompat.CONSUMED
-			}
-
-			toolbar.title = getString(R.string.app_name)
-		}
-
-		setUpMenu()
-	}
-
-	private fun setUpMenu() {
-		viewBinding.toolbar.addMenuProvider(object : MenuProvider {
-			override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-				menuInflater.inflate(R.menu.fragment_all_employees, menu)
-			}
-
-			override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-				val result = when (menuItem.itemId) {
-					R.id.refresh -> {
-						viewModel.fetchAllEmployees(forceRefresh = true)
-
-						true
-					}
-
-					R.id.sort -> {
-						SortOptionsDialogFragment().show(childFragmentManager, null)
-
-						true
-					}
-
-					else -> false
-				}
-
-				return result
-			}
-		}, viewLifecycleOwner, Lifecycle.State.RESUMED)
-	}
-
-	class SortOptionsDialogFragment : DialogFragment() {
-		private val viewModel: AllEmployeesViewModel by viewModels(ownerProducer = { requireParentFragment() })
-
-		override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-			val alertDialog = AlertDialog.Builder(requireContext()).run {
-				setItems(R.array.sort_options) { _, which ->
-					when (which) {
-						0 -> viewModel.sortSelected(SortOption.NAME)
-						1 -> viewModel.sortSelected(SortOption.TEAM)
-					}
-				}
-				setTitle(R.string.sort_by)
-
-				create()
-			}
-
-			return alertDialog
-		}
 	}
 }
 
@@ -166,9 +108,7 @@ private fun EmployeeList(
 ) {
 	val employees by employeeStatesFlow.collectAsStateWithLifecycle()
 
-	// TODO: Fix top window insets for list in landscape orientation.
 	LazyColumn(
-		contentPadding = WindowInsets.systemBars.asPaddingValues(),
 		modifier = Modifier
 			.fillMaxSize()
 			.windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Start))
@@ -262,7 +202,28 @@ private fun LoadingState(loadingStateFlow: StateFlow<LoadingState>) {
 	val loadingState by loadingStateFlow.collectAsStateWithLifecycle()
 
 	if (loadingState.visible) {
-		// TODO: Fix top insets after app bar layout is migrated to Compose.
-		LinearProgressIndicator(modifier = Modifier.safeContentPadding())
+		LinearProgressIndicator()
 	}
+}
+
+@Composable
+private fun TopAppBar(childFragmentManager: FragmentManager, viewModel: AllEmployeesViewModel) {
+	TopAppBar(actions = {
+		IconButton(
+			onClick = {
+				SortOptionsDialogFragment().show(childFragmentManager, null)
+			}) {
+			Image(
+				contentDescription = stringResource(R.string.sort),
+				imageVector = ImageVector.vectorResource(R.drawable.baseline_sort_24)
+			)
+		}
+		IconButton(
+			onClick = { viewModel.fetchAllEmployees(forceRefresh = true) }) {
+			Image(
+				contentDescription = stringResource(R.string.refresh),
+				imageVector = ImageVector.vectorResource(R.drawable.baseline_refresh_24)
+			)
+		}
+	}, title = { Text(text = stringResource(R.string.app_name)) })
 }
