@@ -113,8 +113,10 @@ private fun EmployeeList(
 			.fillMaxSize()
 			.windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Start))
 	) {
-		items(employees) {
-			EmployeeListItem(imageLoader, it.name, it.photoUrlString, it.team)
+		items(employees, key = { it.id }) {
+			EmployeeListItem(
+				imageLoader, Modifier.animateItem(), it.name, it.photoUrlString, it.team
+			)
 		}
 	}
 }
@@ -122,12 +124,13 @@ private fun EmployeeList(
 @Composable
 private fun EmployeeListItem(
 	imageLoader: ImageLoader,
+	modifier: Modifier,
 	@PreviewParameter(LoremIpsum::class) name: String,
 	@PreviewParameter(LoremIpsum::class) photoUrlString: String,
 	@PreviewParameter(LoremIpsum::class) team: String
 ) {
 	Row(
-		modifier = Modifier.padding(
+		modifier = modifier.padding(
 			horizontal = dimensionResource(R.dimen.screen_horizontal_spacing),
 			vertical = dimensionResource(R.dimen.screen_vertical_spacing)
 		), verticalAlignment = Alignment.CenterVertically
