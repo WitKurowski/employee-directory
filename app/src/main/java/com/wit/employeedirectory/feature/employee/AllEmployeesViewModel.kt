@@ -19,7 +19,7 @@ import javax.inject.Inject
 class AllEmployeesViewModel @Inject constructor(private val employeesRepository: EmployeesRepository) :
 	ViewModel() {
 	private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-		// TODO: Log unexpected throwable to something like Crashlytics.
+		// TODO: Log unexpected throwable to a logging platform like Crashlytics.
 
 		// TODO: Consider switching to using Timber.
 		val message = "Caught expected throwable in ${this::class.simpleName}"
@@ -33,12 +33,18 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 	@VisibleForTesting
 	val _employeeStatesFlow = MutableStateFlow<List<EmployeeState>>(emptyList())
 	val employeeStatesFlow = _employeeStatesFlow.asStateFlow()
+
 	private val _emptyStateFlow = MutableStateFlow(EmptyState(visible = false))
 	val emptyStateFlow = _emptyStateFlow.asStateFlow()
+
 	private val _errorStateFlow = MutableStateFlow(ErrorState(visible = false))
 	val errorStateFlow = _errorStateFlow.asStateFlow()
+
 	private val _loadingStateFlow = MutableStateFlow(LoadingState(visible = false))
 	val loadingStateFlow = _loadingStateFlow.asStateFlow()
+
+	private val _sortDialogVisibleStateFlow = MutableStateFlow(false)
+	val sortDialogVisibleStateFlow = _sortDialogVisibleStateFlow.asStateFlow()
 
 	fun fetchAllEmployees(forceRefresh: Boolean = false) {
 		viewModelScope.launch(coroutineExceptionHandler) {
@@ -90,8 +96,22 @@ class AllEmployeesViewModel @Inject constructor(private val employeesRepository:
 		}
 	}
 
+	fun sortDialogDismissed() {
+		viewModelScope.launch {
+			_sortDialogVisibleStateFlow.emit(false)
+		}
+	}
+
+	fun sortMenuItemClicked() {
+		viewModelScope.launch {
+			_sortDialogVisibleStateFlow.emit(true)
+		}
+	}
+
 	fun sortSelected(sortOption: SortOption) {
 		viewModelScope.launch(coroutineExceptionHandler) {
+			_sortDialogVisibleStateFlow.emit(false)
+
 			val employees = _employeeStatesFlow.value
 			val sortedEmployees = when (sortOption) {
 				SortOption.NAME -> employees.sortedBy { it.name }

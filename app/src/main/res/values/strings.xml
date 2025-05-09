@@ -8,9 +8,4 @@
     <string name="sort">Sort</string>
     <string name="sort_by">Sort by</string>
     <string name="team">Team</string>
-
-    <string-array name="sort_options">
-        <item>@string/name</item>
-        <item>@string/team</item>
-    </string-array>
 </resources>

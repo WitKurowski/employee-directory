@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +23,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,11 +45,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wit.employeedirectory.R
 import com.wit.employeedirectory.databinding.FragmentAllEmployeesBinding
+import com.wit.employeedirectory.extension.padding
 import com.wit.employeedirectory.image.ImageLoader
 import com.wit.employeedirectory.theme.EmployeeDirectoryTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,7 +74,7 @@ class AllEmployeesFragment : Fragment() {
 		viewBinding.composeView.setContent {
 			EmployeeDirectoryTheme {
 				Scaffold(topBar = {
-					TopAppBar(childFragmentManager, viewModel)
+					TopAppBar(viewModel)
 				}) {
 					Surface(
 						modifier = Modifier
@@ -84,6 +86,12 @@ class AllEmployeesFragment : Fragment() {
 						EmptyState(viewModel.emptyStateFlow)
 						ErrorState(viewModel.errorStateFlow)
 					}
+				}
+
+				val sortDialogVisible by viewModel.sortDialogVisibleStateFlow.collectAsStateWithLifecycle()
+
+				if (sortDialogVisible) {
+					SortOptionsDialog(viewModel)
 				}
 			}
 		}
@@ -127,8 +135,8 @@ private fun EmployeeListItem(
 ) {
 	Row(
 		modifier = modifier.padding(
-			horizontal = dimensionResource(R.dimen.screen_horizontal_spacing),
-			vertical = dimensionResource(R.dimen.screen_vertical_spacing)
+			horizontal = R.dimen.screen_horizontal_spacing,
+			vertical = R.dimen.screen_vertical_spacing
 		), verticalAlignment = Alignment.CenterVertically
 	) {
 		imageLoader.Image(
@@ -206,11 +214,50 @@ private fun LoadingState(loadingStateFlow: StateFlow<LoadingState>) {
 }
 
 @Composable
-private fun TopAppBar(childFragmentManager: FragmentManager, viewModel: AllEmployeesViewModel) {
+private fun SortOptionsDialog(viewModel: AllEmployeesViewModel) {
+	BasicAlertDialog(
+		onDismissRequest = {
+			viewModel.sortDialogDismissed()
+		},
+	) {
+		Surface(
+			modifier = Modifier.fillMaxWidth(),
+			tonalElevation = 4.dp,
+			shape = RoundedCornerShape(16.dp)
+		) {
+			Column(
+				modifier = Modifier.padding(vertical = R.dimen.screen_vertical_spacing)
+			) {
+				Text(
+					modifier = Modifier.padding(horizontal = 24.dp, bottom = 16.dp),
+					style = MaterialTheme.typography.titleLarge,
+					text = stringResource(R.string.sort_by)
+				)
+				Text(
+					modifier = Modifier
+						.clickable { viewModel.sortSelected(SortOption.NAME) }
+						.padding(24.dp, 8.dp)
+						.fillMaxWidth(),
+					style = MaterialTheme.typography.bodyLarge,
+					text = stringResource(R.string.name))
+				Text(
+					modifier = Modifier
+						.clickable { viewModel.sortSelected(SortOption.TEAM) }
+						.padding(24.dp, 8.dp)
+						.fillMaxWidth(),
+					style = MaterialTheme.typography.bodyLarge,
+					text = stringResource(R.string.team))
+			}
+		}
+	}
+}
+
+@Composable
+private fun TopAppBar(viewModel: AllEmployeesViewModel) {
 	TopAppBar(actions = {
 		IconButton(
 			onClick = {
-				SortOptionsDialogFragment().show(childFragmentManager, null)
+				viewModel.sortMenuItemClicked()
 			}) {
 			Image(
 				contentDescription = stringResource(R.string.sort),
