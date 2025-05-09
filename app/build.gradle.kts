@@ -63,6 +63,7 @@ dependencies {
 	implementation(composeBom)
 	androidTestImplementation(composeBom)
 	implementation(libs.androidx.material3)
+	implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 	// Glide
 	implementation(libs.compose)

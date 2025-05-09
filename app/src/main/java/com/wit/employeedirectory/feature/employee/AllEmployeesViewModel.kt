@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wit.employeedirectory.image.ImageLoader
 import com.wit.employeedirectory.repository.EmployeesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -16,8 +17,9 @@ import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class AllEmployeesViewModel @Inject constructor(private val employeesRepository: EmployeesRepository) :
-	ViewModel() {
+class AllEmployeesViewModel @Inject constructor(
+	private val employeesRepository: EmployeesRepository, val imageLoader: ImageLoader
+) : ViewModel() {
 	private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
 		// TODO: Log unexpected throwable to a logging platform like Crashlytics.
 

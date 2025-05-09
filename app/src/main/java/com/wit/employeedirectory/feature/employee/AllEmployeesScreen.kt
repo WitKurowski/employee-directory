@@ -1,9 +1,5 @@
 package com.wit.employeedirectory.feature.employee
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -33,7 +29,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,65 +42,42 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wit.employeedirectory.R
-import com.wit.employeedirectory.databinding.FragmentAllEmployeesBinding
 import com.wit.employeedirectory.extension.padding
 import com.wit.employeedirectory.image.ImageLoader
-import com.wit.employeedirectory.theme.EmployeeDirectoryTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class AllEmployeesFragment : Fragment() {
-	@Inject
-	lateinit var imageLoader: ImageLoader
+@Composable
+fun AllEmployeesScreen(viewModel: AllEmployeesViewModel = viewModel()) {
+	val sortDialogVisible by viewModel.sortDialogVisibleStateFlow.collectAsStateWithLifecycle()
 
-	private lateinit var viewBinding: FragmentAllEmployeesBinding
-	private val viewModel: AllEmployeesViewModel by viewModels()
-
-	override fun onCreateView(
-		inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-	): View {
-		viewBinding = FragmentAllEmployeesBinding.inflate(inflater, container, false)
-		val view = viewBinding.root
-
-		// TODO: Find proper way to handle insets and padding when dealing with edge-to-edge.
-		viewBinding.composeView.setContent {
-			EmployeeDirectoryTheme {
-				Scaffold(topBar = {
-					TopAppBar(viewModel)
-				}) {
-					Surface(
-						modifier = Modifier
-							.fillMaxWidth()
-							.padding(it)
-					) {
-						EmployeeList(viewModel.employeeStatesFlow, imageLoader)
-						LoadingState(viewModel.loadingStateFlow)
-						EmptyState(viewModel.emptyStateFlow)
-						ErrorState(viewModel.errorStateFlow)
-					}
-				}
-
-				val sortDialogVisible by viewModel.sortDialogVisibleStateFlow.collectAsStateWithLifecycle()
-
-				if (sortDialogVisible) {
-					SortOptionsDialog(viewModel)
-				}
-			}
-		}
-
-		return view
+	if (sortDialogVisible) {
+		SortOptionsDialog(viewModel)
 	}
 
-	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-		super.onViewCreated(view, savedInstanceState)
+	val loadData = remember { true }
 
-		viewModel.fetchAllEmployees()
+	LaunchedEffect(loadData) {
+		if (loadData) {
+			viewModel.fetchAllEmployees()
+		}
+	}
+
+	Scaffold(topBar = {
+		TopAppBar(viewModel)
+	}) {
+		Surface(
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(it)
+		) {
+			EmployeeList(viewModel.employeeStatesFlow, viewModel.imageLoader)
+			LoadingState(viewModel.loadingStateFlow)
+			EmptyState(viewModel.emptyStateFlow)
+			ErrorState(viewModel.errorStateFlow)
+		}
 	}
 }
 
