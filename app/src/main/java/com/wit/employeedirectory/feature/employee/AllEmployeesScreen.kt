@@ -2,6 +2,7 @@ package com.wit.employeedirectory.feature.employee
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -160,7 +161,7 @@ private fun ErrorState(errorStateFlow: StateFlow<ErrorState>) {
 	val errorState by errorStateFlow.collectAsStateWithLifecycle()
 
 	if (errorState.visible) {
-		Surface(color = Color.Transparent) {
+		Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 			Column {
 				Image(
 					contentDescription = null,
