@@ -145,7 +145,7 @@ private fun EmptyState(emptyStateFlow: StateFlow<EmptyState>) {
 	val emptyState by emptyStateFlow.collectAsStateWithLifecycle()
 
 	if (emptyState.visible) {
-		Surface(color = Color.Transparent) {
+		Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 			Text(
 				color = MaterialTheme.colorScheme.onSurfaceVariant,
 				modifier = Modifier.wrapContentWidth(),
