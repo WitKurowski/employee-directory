@@ -279,6 +279,32 @@ class AllEmployeesViewModelTest {
 	}
 
 	@Test
+	fun `sort dialog dismissed`() = runTest(testDispatcher) {
+		val actualSortDialogVisibleStates = mutableListOf<Boolean>()
+		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+			viewModel.sortDialogVisibleStateFlow.toList(actualSortDialogVisibleStates)
+		}
+
+		viewModel.sortDialogDismissed()
+		testDispatcher.scheduler.advanceUntilIdle()
+
+		assertEquals(listOf(false), actualSortDialogVisibleStates)
+	}
+
+	@Test
+	fun `sort menu item clicked`() = runTest(testDispatcher) {
+		val actualSortDialogVisibleStates = mutableListOf<Boolean>()
+		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+			viewModel.sortDialogVisibleStateFlow.toList(actualSortDialogVisibleStates)
+		}
+
+		viewModel.sortMenuItemClicked()
+		testDispatcher.scheduler.advanceUntilIdle()
+
+		assertEquals(listOf(false, true), actualSortDialogVisibleStates)
+	}
+
+	@Test
 	fun `sort empty employee list by name`() = runTest(testDispatcher) {
 		val actualEmployeeStates = mutableListOf<List<EmployeeState>>()
 		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
