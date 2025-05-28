@@ -1,5 +1,6 @@
 package com.wit.employeedirectory.feature.employee
 
+import com.wit.employeedirectory.image.ImageLoader
 import com.wit.employeedirectory.model.Employee
 import com.wit.employeedirectory.repository.EmployeesRepository
 import kotlinx.coroutines.Dispatchers
@@ -23,13 +24,14 @@ import java.io.IOException
 @ExperimentalCoroutinesApi
 class AllEmployeesViewModelTest {
 	private val employeesRepository = mock(EmployeesRepository::class.java)
+	private val imageLoader = mock(ImageLoader::class.java)
 	private val testDispatcher = StandardTestDispatcher()
 	private lateinit var viewModel: AllEmployeesViewModel
 
 	@Before
 	fun setup() {
 		Dispatchers.setMain(testDispatcher)
-		viewModel = AllEmployeesViewModel(employeesRepository)
+		viewModel = AllEmployeesViewModel(employeesRepository, imageLoader)
 	}
 
 	@After
