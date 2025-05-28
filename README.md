@@ -54,5 +54,5 @@ I would say there is room for improvement with the style and colors of the app, 
 I referenced some Android documentation, and I leveraged Android Studio's Gemini integration for advice here and there, but I did not copy any large chunks of code from anywhere.
 
 ## Is there any other information you’d like us to know?
-- I developed on a phone, specifically on a Pixel 7 running Android 15.
+- I tested this app primarily on a Pixel 7 running Android 15.
 - I went with a `ListAdapter` to back the employee list since that gives us a lot of basic functionality out of the box, particularly the animated reordering and updating of the list as the data is changed, while reducing boilerplate code and providing performance efficiencies.
