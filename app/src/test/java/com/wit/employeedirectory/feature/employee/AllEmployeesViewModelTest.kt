@@ -4,7 +4,6 @@ import com.wit.employeedirectory.image.ImageLoader
 import com.wit.employeedirectory.model.Employee
 import com.wit.employeedirectory.repository.EmployeesRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -21,7 +20,6 @@ import org.mockito.BDDMockito.mock
 import retrofit2.HttpException
 import java.io.IOException
 
-@ExperimentalCoroutinesApi
 class AllEmployeesViewModelTest {
 	private val employeesRepository = mock(EmployeesRepository::class.java)
 	private val imageLoader = mock(ImageLoader::class.java)
