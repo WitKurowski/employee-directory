@@ -1,5 +1,5 @@
 # Employee Directory
-The project created as part of the take home test for Block/Square.
+The project was created as part of the take-home test for Block/Square.
 
 ## Build tools & versions used
 - Android Studio Meerkat | 2024.3.1 Patch 1
@@ -39,6 +39,7 @@ Other things I would consider with more time:
 - Add email and phone number to the list since that would likely be helpful in a directory app.  Clicking them could also automatically launch an email or phone app for even easier use.
 - Add the ability to click on the employee photo to show the large, higher-resolution image that is already returned.
 - Add the ability to click on a list item to see an overlay containing a more detailed view of the employee, which could include the biography.
+- More gracefully handle photos of different sizes, possibly with a border/container, by zooming in to the center of the photo, etc.
 - Although it was explicitly stated that we do not want to persist the employee data, we could provide an in-memory caching solution with something such as an `EmployeesLocalDataSource` class.
 - When no employees are returned from the back-end, we could hide the "Sort" menu option since there's nothing to sort.
 - When the employee list is re-fetched, we could consider maintaining the previous sorting order.
