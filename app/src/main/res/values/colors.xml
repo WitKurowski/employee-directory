@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="dark_blue">#1A237E</color>
+    <color name="dark_indigo">#303F9F</color>
+    <color name="deep_purple">#7E57C2</color>
+    <color name="indigo">#3F51B5</color>
     <color name="light_blue">#BBDEFB</color>
+    <color name="light_indigo">#B7C4FF</color>
+    <color name="light_lavender">#C5CAE9</color>
+    <color name="light_purple">#E0B6F6</color>
+    <color name="slightly_lighter_indigo">#5C6BC0</color>
 </resources>

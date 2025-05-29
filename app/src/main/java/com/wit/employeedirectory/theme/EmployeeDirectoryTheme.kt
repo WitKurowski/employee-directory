@@ -26,13 +26,19 @@ fun EmployeeDirectoryTheme(
 
 		darkTheme -> {
 			darkColorScheme(
-				surface = colorResource(id = R.color.dark_blue),
+				primary = colorResource(R.color.dark_blue),
+				secondary = colorResource(R.color.light_indigo),
+				tertiary = colorResource(R.color.light_purple),
+				surface = colorResource(R.color.dark_indigo),
 			)
 		}
 
 		else -> {
 			lightColorScheme(
-				surface = colorResource(id = R.color.light_blue),
+				primary = colorResource(R.color.indigo),
+				secondary = colorResource(R.color.slightly_lighter_indigo),
+				tertiary = colorResource(R.color.deep_purple),
+				surface = colorResource(R.color.light_lavender),
 			)
 		}
 	}
