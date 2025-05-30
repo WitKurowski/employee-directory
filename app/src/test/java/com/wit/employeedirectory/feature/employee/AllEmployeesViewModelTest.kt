@@ -3,6 +3,11 @@ package com.wit.employeedirectory.feature.employee
 import com.wit.employeedirectory.image.ImageLoader
 import com.wit.employeedirectory.model.Employee
 import com.wit.employeedirectory.repository.EmployeesRepository
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerifySequence
+import io.mockk.impl.annotations.MockK
+import io.mockk.verifySequence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -15,20 +20,29 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.mock
 import retrofit2.HttpException
 import java.io.IOException
 
 class AllEmployeesViewModelTest {
-	private val employeesRepository = mock(EmployeesRepository::class.java)
-	private val imageLoader = mock(ImageLoader::class.java)
+	@MockK
+	lateinit var employeesRepository: EmployeesRepository
+
+	@MockK
+	lateinit var httpException: HttpException
+
+	@MockK
+	lateinit var imageLoader: ImageLoader
+
+	@MockK
+	lateinit var ioException: IOException
+
 	private val testDispatcher = StandardTestDispatcher()
 	private lateinit var viewModel: AllEmployeesViewModel
 
 	@Before
 	fun setup() {
 		Dispatchers.setMain(testDispatcher)
+		MockKAnnotations.init(this, relaxUnitFun = true)
 		viewModel = AllEmployeesViewModel(employeesRepository, imageLoader)
 	}
 
@@ -39,7 +53,7 @@ class AllEmployeesViewModelTest {
 
 	@Test
 	fun `show empty state when an empty list of employees is returned`() = runTest(testDispatcher) {
-		given(employeesRepository.getAllEmployees()).willReturn(emptyList())
+		coEvery { employeesRepository.getAllEmployees() } returns emptyList()
 
 		val actualEmployeeStates = mutableListOf<List<EmployeeState>>()
 		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -60,6 +74,8 @@ class AllEmployeesViewModelTest {
 
 		viewModel.fetchAllEmployees()
 		testDispatcher.scheduler.advanceUntilIdle()
+
+		coVerifySequence { employeesRepository.getAllEmployees() }
 
 		assertEquals(listOf(emptyList<EmployeeState>()), actualEmployeeStates)
 		assertEquals(
@@ -94,8 +110,7 @@ class AllEmployeesViewModelTest {
 			Employee(id = id2, name = name2, photoUrlString = photoUrlString2, team = team2),
 			Employee(id = id3, name = name3, photoUrlString = photoUrlString3, team = team3)
 		)
-		given(employeesRepository.getAllEmployees()) //
-			.willReturn(employees)
+		coEvery { employeesRepository.getAllEmployees() } returns employees
 
 		val actualEmployeeStates = mutableListOf<List<EmployeeState>>()
 		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -116,6 +131,8 @@ class AllEmployeesViewModelTest {
 
 		viewModel.fetchAllEmployees()
 		testDispatcher.scheduler.advanceUntilIdle()
+
+		coVerifySequence { employeesRepository.getAllEmployees() }
 
 		val employeeState1 = EmployeeState(id1, name1, photoUrlString1, team1)
 		val employeeState2 = EmployeeState(id2, name2, photoUrlString2, team2)
@@ -160,8 +177,8 @@ class AllEmployeesViewModelTest {
 			Employee(id = id2, name = name2, photoUrlString = photoUrlString2, team = team2),
 			Employee(id = id3, name = name3, photoUrlString = photoUrlString3, team = team3)
 		)
-		given(employeesRepository.getAllEmployees()) //
-			.willReturn(employees)
+
+		coEvery { employeesRepository.getAllEmployees() } returns employees
 
 		val actualEmployeeStates = mutableListOf<List<EmployeeState>>()
 		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -183,6 +200,8 @@ class AllEmployeesViewModelTest {
 		viewModel.fetchAllEmployees(forceRefresh = true)
 		testDispatcher.scheduler.advanceUntilIdle()
 
+		coVerifySequence { employeesRepository.getAllEmployees() }
+
 		val finalEmployeeStates = listOf(
 			employeeState1, employeeState2, employeeState3
 		)
@@ -200,8 +219,7 @@ class AllEmployeesViewModelTest {
 
 	@Test
 	fun `show error state when HttpException is thrown`() = runTest(testDispatcher) {
-		given(employeesRepository.getAllEmployees()) //
-			.willThrow(HttpException::class.java)
+		coEvery { employeesRepository.getAllEmployees() } throws httpException
 
 		val actualEmployeeStates = mutableListOf<List<EmployeeState>>()
 		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -222,6 +240,8 @@ class AllEmployeesViewModelTest {
 
 		viewModel.fetchAllEmployees()
 		testDispatcher.scheduler.advanceUntilIdle()
+
+		coVerifySequence { employeesRepository.getAllEmployees() }
 
 		assertEquals(listOf(emptyList<EmployeeState>()), actualEmployeeStates)
 		assertEquals(listOf(EmptyState(visible = false)), actualEmptyStates)
@@ -239,8 +259,7 @@ class AllEmployeesViewModelTest {
 
 	@Test
 	fun `show error state when IOException is thrown`() = runTest(testDispatcher) {
-		given(employeesRepository.getAllEmployees()) //
-			.willThrow(IOException::class.java)
+		coEvery { employeesRepository.getAllEmployees() } throws ioException
 
 		val actualEmployeeStates = mutableListOf<List<EmployeeState>>()
 		backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -261,6 +280,8 @@ class AllEmployeesViewModelTest {
 
 		viewModel.fetchAllEmployees()
 		testDispatcher.scheduler.advanceUntilIdle()
+
+		coVerifySequence { employeesRepository.getAllEmployees() }
 
 		assertEquals(listOf(emptyList<EmployeeState>()), actualEmployeeStates)
 		assertEquals(listOf(EmptyState(visible = false)), actualEmptyStates)

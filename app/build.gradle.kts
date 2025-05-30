@@ -72,8 +72,8 @@ dependencies {
 	implementation(libs.hilt.android)
 	kapt(libs.hilt.android.compiler)
 
-	// Mockito
-	testImplementation(libs.mockito.core)
+	// MockK
+	testImplementation(libs.mockk)
 
 	// Retrofit
 	implementation(libs.converter.gson)
